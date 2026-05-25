@@ -1003,3 +1003,104 @@ describe("transformFormToApiData - secret env var preservation", () => {
     expect(env[1]?.value ?? "").toBe("");
   });
 });
+
+describe("transformFormToApiData - arguments parsing", () => {
+  function buildArgsFormValues(
+    argumentsStr: string,
+  ): McpCatalogFormValues {
+    return {
+      name: "args-test-mcp",
+      description: "",
+      icon: null,
+      serverType: "local",
+      serverUrl: "",
+      authMethod: "none",
+      includeBearerPrefix: true,
+      authHeaderName: "",
+      additionalHeaders: [],
+      oauthConfig: undefined,
+      enterpriseManagedConfig: null,
+      localConfig: {
+        command: "npx",
+        arguments: argumentsStr,
+        environment: [],
+        envFrom: [],
+        dockerImage: "",
+        transportType: "stdio",
+        httpPort: "",
+        httpPath: "",
+        serviceAccount: "",
+        imagePullSecrets: [],
+      },
+      deploymentSpecYaml: "",
+      originalDeploymentSpecYaml: "",
+      oauthClientSecretVaultPath: "",
+      oauthClientSecretVaultKey: "",
+      localConfigVaultPath: "",
+      localConfigVaultKey: "",
+      labels: [],
+      scope: "personal",
+      teams: [],
+    };
+  }
+
+  it("parses one-argument-per-line format", () => {
+    const result = transformFormToApiData(
+      buildArgsFormValues("-y\n@modelcontextprotocol/server-filesystem"),
+    );
+    expect(result.localConfig?.arguments).toEqual([
+      "-y",
+      "@modelcontextprotocol/server-filesystem",
+    ]);
+  });
+
+  it("parses JSON array format", () => {
+    const result = transformFormToApiData(
+      buildArgsFormValues('["- y", "@modelcontextprotocol/server-filesystem"]'),
+    );
+    expect(result.localConfig?.arguments).toEqual([
+      "-y",
+      "@modelcontextprotocol/server-filesystem",
+    ]);
+  });
+
+  it("parses JSON array with numeric values coerced to strings", () => {
+    const result = transformFormToApiData(
+      buildArgsFormValues('["--port", 8080]'),
+    );
+    expect(result.localConfig?.arguments).toEqual(["--port", "8080"]);
+  });
+
+  it("falls back to one-per-line when JSON array is malformed", () => {
+    const result = transformFormToApiData(
+      buildArgsFormValues('["unclosed'),
+    );
+    expect(result.localConfig?.arguments).toEqual(['["unclosed']);
+  });
+
+  it("falls back to one-per-line when value does not start with [", () => {
+    const result = transformFormToApiData(
+      buildArgsFormValues('{"not": "array"}'),
+    );
+    expect(result.localConfig?.arguments).toEqual(['{"not": "array"}']);
+  });
+
+  it("returns undefined for empty arguments string", () => {
+    const result = transformFormToApiData(buildArgsFormValues(""));
+    expect(result.localConfig?.arguments).toBeUndefined();
+  });
+
+  it("trims whitespace from one-per-line entries", () => {
+    const result = transformFormToApiData(
+      buildArgsFormValues("  -y  \n  @pkg  "),
+    );
+    expect(result.localConfig?.arguments).toEqual(["-y", "@pkg"]);
+  });
+
+  it("filters blank lines in one-per-line format", () => {
+    const result = transformFormToApiData(
+      buildArgsFormValues("-y\n\n@pkg\n"),
+    );
+    expect(result.localConfig?.arguments).toEqual(["-y", "@pkg"]);
+  });
+});
