@@ -1,7 +1,7 @@
 "use client";
 
 import type { ChatSkillMetadata } from "@shared";
-import { AlertTriangle, FileText, Paperclip, Sparkles } from "lucide-react";
+import { AlertTriangle, ExternalLink, FileText, Paperclip, Sparkles } from "lucide-react";
 import Link from "next/link";
 import {
   type KeyboardEventHandler,
@@ -238,7 +238,6 @@ export function EditableUserMessage({
                 href={attachment.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                download={attachment.filename}
                 className="flex items-center gap-2 text-sm rounded-lg border bg-muted/50 p-2 hover:bg-muted transition-colors"
               >
                 {isCsvAttachment(attachment.mediaType, attachment.filename) ||
@@ -247,6 +246,8 @@ export function EditableUserMessage({
                   attachment.filename,
                 ) ? (
                   <FileText className="h-4 w-4 text-muted-foreground" />
+                ) : attachment.mediaType === "application/pdf" ? (
+                  <FileText className="h-4 w-4 text-red-400" />
                 ) : (
                   <Paperclip className="h-4 w-4 text-muted-foreground" />
                 )}
@@ -257,6 +258,7 @@ export function EditableUserMessage({
                       filename: attachment.filename,
                     })}
                 </span>
+                <ExternalLink className="h-3 w-3 text-muted-foreground shrink-0 ml-auto" />
               </Link>
             ))}
           </div>
