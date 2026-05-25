@@ -21,6 +21,7 @@ The main pieces are:
 - **[MCP Orchestrator](/docs/platform-orchestrator)**: the runtime for self-hosted MCP servers. It creates isolated Kubernetes deployments, manages server lifecycle, and routes gateway traffic to local servers.
 - **[MCP Authentication](/docs/mcp-authentication)**: the gateway and upstream credential model. Clients authenticate to Archestra, then Archestra resolves the credential needed by each upstream MCP server at tool-call time.
 - **[Archestra MCP Server](/docs/platform-archestra-mcp-server)**: built-in tools for managing platform resources such as agents, MCP gateways, registry entries, policies, and limits.
+- **[Sorting your MCP tools](/docs/platform-sorting-your-mcp-tools)**: Patronus-based authorization for risky MCP tool calls.
 
 ## How Tools Are Reached
 
