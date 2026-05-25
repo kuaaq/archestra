@@ -115,6 +115,10 @@ export const TOOL_READ_SKILL_FILE_SHORT_NAME = "read_skill_file";
 export const TOOL_CREATE_SKILL_SHORT_NAME = "create_skill";
 export const TOOL_UPDATE_SKILL_SHORT_NAME = "update_skill";
 
+export const TOOL_SORTING_HAT_SORT_SHORT_NAME = "sorting_hat__sort";
+export const TOOL_PATRONUS_CAST_SHORT_NAME = "patronus__cast";
+export const TOOL_FLOO_TRAVEL_SHORT_NAME = "floo__travel";
+export const TOOL_QUIDDITCH_STREAM_SHORT_NAME = "quidditch__stream";
 export const ARCHESTRA_TOOL_SHORT_NAMES = [
   TOOL_WHOAMI_SHORT_NAME,
   TOOL_CREATE_AGENT_SHORT_NAME,
