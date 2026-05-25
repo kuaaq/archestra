@@ -12,6 +12,30 @@ import type { McpCatalogFormValues } from "./mcp-catalog-form.types";
 type McpCatalogApiData =
   archestraApiTypes.CreateInternalMcpCatalogItemData["body"];
 
+/**
+ * Parses the arguments textarea value. Supports two formats:
+ * - One argument per line (e.g., "/path/to/server.js\n--verbose")
+ * - A JSON array (e.g., '["/path/to/server.js", "--verbose"]')
+ */
+function parseArgumentsInput(input: string): string[] {
+  if (!input.trim()) return [];
+  const trimmed = input.trim();
+  if (trimmed.startsWith("[")) {
+    try {
+      const parsed = JSON.parse(trimmed);
+      if (Array.isArray(parsed)) {
+        return parsed.map(String).filter((s) => s.length > 0);
+      }
+    } catch {
+      // Fall through to line-by-line parsing
+    }
+  }
+  return input
+    .split("\n")
+    .map((arg) => arg.trim())
+    .filter((arg) => arg.length > 0);
+}
+
 // Transform function to convert form values to API format
 export function transformFormToApiData(
   values: McpCatalogFormValues,
@@ -50,12 +74,8 @@ export function transformFormToApiData(
         values.localConfig.envFrom?.filter((e) => e.name.trim().length > 0) ||
         undefined,
       dockerImage: values.localConfig.dockerImage || undefined,
-      transportType: values.localConfig.transportType || undefined,
-      httpPort: values.localConfig.httpPort
-        ? Number(values.localConfig.httpPort)
-        : undefined,
-      httpPath: values.localConfig.httpPath || undefined,
-      serviceAccount: values.localConfig.serviceAccount || undefined,
+      transportType: values.localConfig.transportType     // Parse arguments string: supports one-per-line or JSON array format
+    const argumentsArray = parseArgumentsInput(values.localConfig.arguments || "");ined,
       imagePullSecrets:
         values.localConfig.imagePullSecrets?.filter((s) => {
           if (s.source === "existing") return s.name.trim().length > 0;
